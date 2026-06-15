@@ -1,0 +1,26 @@
+# 项目指导文档（不上传）
+spec.md
+tasks.md
+checklist.md
+
+# 构建输出
+target/
+build/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 环境配置（含敏感信息）
+.env
+.env.*
+
+# 会话日志（运行时生成）
+sessions/
