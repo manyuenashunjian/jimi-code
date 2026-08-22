@@ -6,6 +6,8 @@ checklist.md
 # 构建输出
 target/
 build/
+.gradle/
+out/
 *.class
 *.jar
 
@@ -24,3 +26,9 @@ Thumbs.db
 
 # 会话日志（运行时生成）
 sessions/
+
+# 工作区
+.mewcode/
+
+# 项目文档
+CLAUDE.md

@@ -1,0 +1,14 @@
+providers:
+  - name: anthropic
+    protocol: anthropic
+    base_url: https://api.anthropic.com
+    model: claude-sonnet-4-6
+    context_window: 200000
+    max_output_tokens: 8192
+    api_key: "sk-ant-xxxxxxxxxxxxxxxxxxxx"  # 优先从配置文件读取；留空时回退到环境变量 ANTHROPIC_API_KEY
+    thinking: false
+
+permission_mode: default
+
+mcp_servers: []
+hooks: []
