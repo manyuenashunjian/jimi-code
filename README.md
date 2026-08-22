@@ -1,6 +1,6 @@
 # MewCode / jimi-code
 
-MewCode 是一个 AI Coding Agent 的完整实现，帮助你理解 AI Agent 的核心原理与工程实践。当前仓库的 Java 主实现已经切换为 Java 21 + Maven；Go 实现继续保留在 `cmd/` 与 `internal/`，作为并行参考实现。
+MewCode 是一个 AI Coding Agent 的完整 Java 实现，帮助你理解 AI Agent 的核心原理与工程实践。当前仓库已统一为 Java 21 + Maven 构建。
 
 ## 环境要求
 
@@ -56,10 +56,6 @@ Windows PowerShell：
 java -jar target\mewcode.jar
 ```
 
-### Go 参考实现
-
-Go 版本仍位于 `cmd/mewcode`、`internal` 和 `go.mod`，可使用 `go test ./...` 验证。它与 Java/Maven 版本共享 Agent、LLM、工具、权限、MCP、会话和压缩等概念，但不是同一套运行时；不要把 Go 构建结果当作 Maven 构建证据。
-
 ### 源码教材
 
-详细中文源码教材位于 [`study-notes/sourcebook`](study-notes/sourcebook/README.md)，包含 Java/Go 双实现架构、Maven 配置、Agent Loop、工具权限、MCP、会话恢复、上下文压缩、Worktree 和复刻练习。
+详细中文源码教材位于 [`study-notes/sourcebook`](study-notes/sourcebook/README.md)，包含 Java/Maven 架构、Agent Loop、工具权限、MCP、会话恢复、上下文压缩、Worktree 和复刻练习。
