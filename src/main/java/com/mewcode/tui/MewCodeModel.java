@@ -72,6 +72,7 @@ public class MewCodeModel implements Model {
     private final List<ProviderConfig> providers;
     private final List<McpServerConfig> mcpServers;
     private final List<HookConfig> hookConfigs;
+    private final PermissionMode initialPermissionMode;
     private HookEngine hookEngine;
     private int providerCursor;
     private ProviderConfig selectedProvider;
@@ -202,9 +203,16 @@ public class MewCodeModel implements Model {
 
     public MewCodeModel(List<ProviderConfig> providers, List<McpServerConfig> mcpServers,
                         List<HookConfig> hookConfigs) {
+        this(providers, mcpServers, hookConfigs, PermissionMode.DEFAULT);
+    }
+
+    public MewCodeModel(List<ProviderConfig> providers, List<McpServerConfig> mcpServers,
+                        List<HookConfig> hookConfigs, PermissionMode initialPermissionMode) {
         this.providers = providers != null ? providers : List.of();
         this.mcpServers = mcpServers != null ? mcpServers : List.of();
         this.hookConfigs = hookConfigs != null ? hookConfigs : List.of();
+        this.initialPermissionMode = initialPermissionMode != null
+                ? initialPermissionMode : PermissionMode.DEFAULT;
         if (this.providers.size() == 1) {
             this.selectedProvider = this.providers.get(0);
             this.state = AppState.CHAT;
@@ -493,7 +501,7 @@ public class MewCodeModel implements Model {
             registry.register(new com.mewcode.teams.TeamTools.SendMessageTool(teamManager, "lead"));
 
             permChecker = new PermissionChecker(
-                    PermissionMode.DEFAULT, Path.of(workDir));
+                    initialPermissionMode, Path.of(workDir));
 
             sessionId = com.mewcode.session.SessionManager.newId();
             fileHistory = new com.mewcode.filehistory.FileHistory(workDir, sessionId);

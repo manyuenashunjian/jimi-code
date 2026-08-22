@@ -8,12 +8,26 @@ package com.mewcode.permission;
 
 import com.mewcode.tool.ToolCategory;
 
+import java.util.Locale;
+
 public enum PermissionMode {
 
     DEFAULT,
     ACCEPT_EDITS,
     PLAN,
     BYPASS;
+
+    public static PermissionMode fromConfig(String value) {
+        if (value == null || value.isBlank()) return DEFAULT;
+
+        return switch (value.trim().toLowerCase(Locale.ROOT).replace("_", "").replace("-", "")) {
+            case "default" -> DEFAULT;
+            case "acceptedits" -> ACCEPT_EDITS;
+            case "plan" -> PLAN;
+            case "bypass", "bypasspermissions" -> BYPASS;
+            default -> throw new IllegalArgumentException("Unknown permission mode: " + value);
+        };
+    }
 
     public Decision decide(ToolCategory category) {
         return switch (this) {
@@ -34,4 +48,3 @@ public enum PermissionMode {
         ALLOW, DENY, ASK
     }
 }
-

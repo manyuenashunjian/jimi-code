@@ -115,8 +115,15 @@ public class ConfigLoader {
     }
 
     private static void validate(AppConfig cfg) throws ConfigException {
+        if (cfg == null || cfg.getProviders() == null || cfg.getProviders().isEmpty()) {
+            throw new ConfigException("At least one provider must be configured");
+        }
+
         for (int i = 0; i < cfg.getProviders().size(); i++) {
             var p = cfg.getProviders().get(i);
+            if (p == null) {
+                throw new ConfigException("Provider #%d must not be null".formatted(i + 1));
+            }
             var missing = new ArrayList<String>();
 
             if (isBlank(p.getName())) missing.add("name");

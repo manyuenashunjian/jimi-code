@@ -8,6 +8,7 @@ package com.mewcode;
 
 import com.mewcode.config.AppConfig;
 import com.mewcode.config.ConfigLoader;
+import com.mewcode.permission.PermissionMode;
 import com.mewcode.tui.MewCodeModel;
 
 import com.williamcallahan.tui4j.compat.bubbletea.Program;
@@ -38,10 +39,20 @@ public class MewCode {
             return;
         }
 
+        PermissionMode permissionMode;
+        try {
+            permissionMode = PermissionMode.fromConfig(config.getPermissionMode());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Configuration error: " + e.getMessage());
+            System.exit(1);
+            return;
+        }
+
         var model = new MewCodeModel(
                 config.getProviders(),
                 config.getMcpServers() != null ? config.getMcpServers() : List.of(),
-                config.getHooks() != null ? config.getHooks() : List.of()
+                config.getHooks() != null ? config.getHooks() : List.of(),
+                permissionMode
         );
 
         var program = new Program(model);
@@ -67,4 +78,3 @@ public class MewCode {
         }
     }
 }
-

@@ -2,7 +2,7 @@
 
 ## 项目定位
 
-`jimi-code` 是从 `mewcode-java` 改名后的原始混合实现目录。它同时包含 Java 21/Gradle 版本和 Go 版本：Java 代码位于 `src/main/java/com/mewcode`，Go 代码位于 `internal` 与 `cmd/mewcode`。目录中还保留原始 `mewcode-maven` 变体；为了便于独立构建，它已复制为工作区根目录下的 [java-maven](../../../java-maven/README.md)。
+`jimi-code` 是从 `mewcode-java` 改名后的原始混合实现目录。它现在以 Java 21/Maven 为 Java 主构建，Java 代码位于 `src/main/java/com/mewcode`，Go 参考实现位于 `internal` 与 `cmd/mewcode`。原 Maven 子项目已独立复制为工作区根目录下的 [java-maven](../../../java-maven/README.md)。
 
 ## 阅读顺序
 

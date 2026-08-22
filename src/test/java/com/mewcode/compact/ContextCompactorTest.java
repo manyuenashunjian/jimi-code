@@ -106,7 +106,7 @@ class ContextCompactorTest {
         ConversationManager conv = new ConversationManager();
         conv.addUserMessage("run a command");
 
-        String bigContent = "x".repeat(20_000);
+        String bigContent = "x".repeat(50_001);
         conv.addToolResultsMessage(List.of(
                 new ToolResultBlock("tu-1", bigContent, false)));
 
@@ -125,7 +125,7 @@ class ContextCompactorTest {
         ConversationManager conv = new ConversationManager();
         conv.addUserMessage("run");
         conv.addToolResultsMessage(List.of(
-                new ToolResultBlock("tu-2", "y".repeat(20_000), false)));
+                new ToolResultBlock("tu-2", "y".repeat(50_001), false)));
 
         ContextCompactor.offloadAndSnip(conv, tempDir.toString());
         String secondResult = ContextCompactor.offloadAndSnip(conv, tempDir.toString());
@@ -352,4 +352,3 @@ class ContextCompactorTest {
         assertFalse(tracking.isTripped());
     }
 }
-

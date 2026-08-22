@@ -119,8 +119,28 @@ public class ProviderConfig {
         return thinking ? 64_000 : 8192;
     }
 
+    /**
+     * Resolve the effective API key, highest priority first:
+     *
+     * <ol>
+     *   <li>{@code api_key} written in the config file (project
+     *       {@code .mewcode/config.yaml}, {@code config.local.yaml}, or the
+     *       home-level layer) — always wins;</li>
+     *   <li>the protocol's standard environment variable
+     *       ({@code ANTHROPIC_API_KEY} / {@code OPENAI_API_KEY}) as fallback.</li>
+     * </ol>
+     *
+     * @return the resolved key, or {@code ""} when neither source provides one;
+     *         callers must treat an empty result as an authentication failure
+     */
     public String resolvedApiKey() {
+        // 1) Config file api_key — highest priority.
         if (apiKey != null && !apiKey.isEmpty()) return apiKey;
+        // 2) Fall back to the protocol's standard environment variable.
+        return envApiKey();
+    }
+
+    private String envApiKey() {
         String envVar = ENV_KEY_MAP.get(protocol);
         if (envVar == null) return "";
         String val = System.getenv(envVar);

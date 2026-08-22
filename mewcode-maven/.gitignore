@@ -1,8 +1,0 @@
-/target/
-/maven-repository/
-/.mewcode/
-/.idea/
-*.iml
-.classpath
-.project
-.settings/
