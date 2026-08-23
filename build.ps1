@@ -79,5 +79,5 @@ if (-not $MavenArgs -or $MavenArgs.Count -eq 0) {
 }
 
 Write-Host "Using JAVA_HOME=$javaHome"
-& (Join-Path $PSScriptRoot "mvnw.cmd") @MavenArgs
+& mvn @MavenArgs
 exit $LASTEXITCODE

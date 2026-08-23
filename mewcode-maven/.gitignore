@@ -1,8 +1,0 @@
-/target/
-/maven-repository/
-/.jimicode/
-/.idea/
-*.iml
-.classpath
-.project
-.settings/

@@ -5,8 +5,7 @@ JimiCode 是一个 AI Coding Agent 的完整 Java 实现，帮助你理解 AI Ag
 ## 环境要求
 
 - Java 21+
-- Maven 3.9+（项目自带 Maven Wrapper，无需单独安装）
-- Windows 建议使用 JDK 21 和 `mvnw.cmd`
+- Maven 3.9+
 
 ## 快速开始
 
@@ -39,20 +38,20 @@ mcp_servers:
 ### 2. 构建 & 运行 Java/Maven 版本
 
 ```bash
-./mvnw clean package
+mvn clean package
 java -jar target/jimicode.jar
 ```
 
 ### 3. 运行测试
 
 ```bash
-./mvnw test
+mvn test
 ```
 
 Windows PowerShell：
 
 ```powershell
-.\mvnw.cmd clean verify
+mvn.cmd clean verify
 java -jar target\jimicode.jar
 ```
 
