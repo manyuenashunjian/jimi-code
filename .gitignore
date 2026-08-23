@@ -28,10 +28,7 @@ Thumbs.db
 sessions/
 
 # 工作区
-.mewcode/
+.jimicode/
 
 # 项目文档
 CLAUDE.md
-
-# 已独立迁移到工作区根目录的旧 Maven 子项目（保留本地运行状态，不上传）
-mewcode-maven/

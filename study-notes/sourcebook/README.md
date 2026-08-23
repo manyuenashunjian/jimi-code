@@ -1,8 +1,8 @@
-# jimi-code 源码学习教材
+﻿# jimi-code 源码学习教材
 
 ## 项目定位
 
-`jimi-code` 是从 `mewcode-java` 改名后的 Java 项目。它现在统一使用 Java 21/Maven，代码位于 `src/main/java/com/mewcode`。原 Maven 子项目已独立复制为工作区根目录下的 [java-maven](../../../java-maven/README.md)。
+`jimi-code` 是从 `JimiCode-java` 改名后的 Java 项目。它现在统一使用 Java 21/Maven，代码位于 `src/main/java/com/JimiCode`。原 Maven 子项目已独立复制为工作区根目录下的 [java-maven](../../../java-maven/README.md)。
 
 ## 阅读顺序
 

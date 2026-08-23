@@ -1,4 +1,4 @@
-# 05 工具、权限、MCP 与 SubAgent
+﻿# 05 工具、权限、MCP 与 SubAgent
 
 ## 工具注册
 

@@ -1,6 +1,6 @@
-# MewCode / jimi-code
+# JimiCode
 
-MewCode 是一个 AI Coding Agent 的完整 Java 实现，帮助你理解 AI Agent 的核心原理与工程实践。当前仓库已统一为 Java 21 + Maven 构建。
+JimiCode 是一个 AI Coding Agent 的完整 Java 实现，帮助你理解 AI Agent 的核心原理与工程实践。当前仓库已统一为 Java 21 + Maven 构建。
 
 ## 环境要求
 
@@ -12,7 +12,7 @@ MewCode 是一个 AI Coding Agent 的完整 Java 实现，帮助你理解 AI Age
 
 ### 1. 配置
 
-编辑 `.mewcode/config.yaml`，填入你的 LLM 提供商信息：
+编辑 `.jimicode/config.yaml`，填入你的 LLM 提供商信息：
 
 ```yaml
 providers:
@@ -40,7 +40,7 @@ mcp_servers:
 
 ```bash
 ./mvnw clean package
-java -jar target/mewcode.jar
+java -jar target/jimicode.jar
 ```
 
 ### 3. 运行测试
@@ -53,7 +53,7 @@ Windows PowerShell：
 
 ```powershell
 .\mvnw.cmd clean verify
-java -jar target\mewcode.jar
+java -jar target\jimicode.jar
 ```
 
 ### 源码教材

@@ -1,4 +1,4 @@
-# 03 Java/Maven 架构
+﻿# 03 Java/Maven 架构
 
 ## Java/Maven 运行时
 
@@ -6,7 +6,7 @@
 
 ## 分层
 
-接入层是 TUI：`MewCodeModel`、`ChatMessage`、`AppState` 和 `MarkdownRenderer`。应用层是 `Agent`，负责循环、Prompt、工具结果、压缩和通知。领域层包括 conversation、permission、plan、memory、subagent、task、team。基础设施层包括 LLM SDK、MCP transport、文件历史、Git worktree 和配置加载。
+接入层是 TUI：`JimiCodeModel`、`ChatMessage`、`AppState` 和 `MarkdownRenderer`。应用层是 `Agent`，负责循环、Prompt、工具结果、压缩和通知。领域层包括 conversation、permission、plan、memory、subagent、task、team。基础设施层包括 LLM SDK、MCP transport、文件历史、Git worktree 和配置加载。
 
 ```mermaid
 flowchart TD

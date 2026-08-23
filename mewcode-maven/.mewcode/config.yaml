@@ -1,0 +1,14 @@
+providers:
+  - name: openai
+    protocol: openai
+    base_url: https://llm-q0yd4k8857ugh3u1.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+    model: qwen3.7-max-2026-05-20
+    context_window: 200000
+    max_output_tokens: 8192
+    api_key: "sk-ws-H.ELRMIPP.1NbN.MEQCIHdWRC51fJ78_ecIhBdSRU0M35sMCqypD2YbgLZk8a8QAiALnX-jmZdJQmlmhshG6C5W3UsQu7jYLqh6jA4-5jOsPQ"  # TODO: 填入你的 API Key；留空时回退到环境变量 OPENAI_API_KEY
+    thinking: false
+
+permission_mode: default
+
+mcp_servers: []
+hooks: []
