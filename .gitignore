@@ -23,6 +23,8 @@ Thumbs.db
 # 环境配置（含敏感信息）
 .env
 .env.*
+# 但配置模板需要入库
+!.env.example
 
 # 会话日志（运行时生成）
 sessions/
