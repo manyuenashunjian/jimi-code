@@ -1,4 +1,4 @@
-﻿// 来源：公众号@小林coding
+// 来源：公众号@小林coding
 // 后端八股网站：xiaolincoding.com
 // Agent网站：xiaolinnote.com
 // 简历模版：jianli.xiaolinnote.com
@@ -143,7 +143,8 @@ public class ProviderConfig {
     private String envApiKey() {
         String envVar = ENV_KEY_MAP.get(protocol);
         if (envVar == null) return "";
-        String val = System.getenv(envVar);
+        // Real environment variable wins; a local .env file acts as fallback.
+        String val = DotenvLoader.get(envVar);
         return val != null ? val : "";
     }
 }

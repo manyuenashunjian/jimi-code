@@ -1,4 +1,4 @@
-﻿// 来源：公众号@小林coding
+// 来源：公众号@小林coding
 // 后端八股网站：xiaolincoding.com
 // Agent网站：xiaolinnote.com
 // 简历模版：jianli.xiaolinnote.com
@@ -23,8 +23,20 @@ public class ConfigLoader {
     private static final Set<String> VALID_PROTOCOLS = Set.of("anthropic", "openai", "openai-compat");
 
     public static AppConfig load(String path) throws ConfigException {
+        // Load .env first so values defined there (e.g. JimiCode_CONFIG,
+        // ANTHROPIC_API_KEY / OPENAI_API_KEY) participate in startup.
+        DotenvLoader.load();
+
         if (path != null && !path.isEmpty()) {
             var cfg = loadSingleFile(Path.of(path));
+            validate(cfg);
+            return cfg;
+        }
+
+        // A .env file may also point at the config file location.
+        String envPath = DotenvLoader.get("JimiCode_CONFIG");
+        if (envPath != null && !envPath.isBlank()) {
+            var cfg = loadSingleFile(Path.of(envPath));
             validate(cfg);
             return cfg;
         }

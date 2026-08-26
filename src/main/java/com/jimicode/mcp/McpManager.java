@@ -1,10 +1,11 @@
-﻿// 来源：公众号@小林coding
+// 来源：公众号@小林coding
 // 后端八股网站：xiaolincoding.com
 // Agent网站：xiaolinnote.com
 // 简历模版：jianli.xiaolinnote.com
 
 package com.jimicode.mcp;
 
+import com.jimicode.config.DotenvLoader;
 import com.jimicode.config.McpServerConfig;
 import com.jimicode.tool.Tool;
 import com.jimicode.tool.ToolCategory;
@@ -137,7 +138,7 @@ public class McpManager {
     static String resolveEnvVars(String value) {
         if (value == null) return null;
         return ENV_VAR.matcher(value).replaceAll(m -> {
-            String env = System.getenv(m.group(1));
+            String env = DotenvLoader.get(m.group(1));
             return env != null ? env : m.group(0);
         });
     }
