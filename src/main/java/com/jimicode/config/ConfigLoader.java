@@ -16,11 +16,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ConfigLoader {
 
     private static final Set<String> VALID_PROTOCOLS = Set.of("anthropic", "openai", "openai-compat");
+
+    /** Default endpoints used when building a provider purely from .env / env vars. */
+    private static final Map<String, String> DEFAULT_BASE_URLS = Map.of(
+            "anthropic", "https://api.anthropic.com",
+            "openai", "https://api.openai.com",
+            "openai-compat", "https://api.openai.com"
+    );
+
+    /** Default models used when building a provider purely from .env / env vars. */
+    private static final Map<String, String> DEFAULT_MODELS = Map.of(
+            "anthropic", "claude-sonnet-4-6",
+            "openai", "gpt-4o",
+            "openai-compat", "gpt-4o"
+    );
 
     public static AppConfig load(String path) throws ConfigException {
         // Load .env first so values defined there (e.g. JimiCode_CONFIG,
@@ -61,12 +76,77 @@ public class ConfigLoader {
         }
 
         if (merged == null) {
+            // No config file at all: if an API key is available from the
+            // environment or a .env file, build a default provider so the app
+            // can start without writing any config.yaml.
+            AppConfig fromEnv = buildFromEnv();
+            if (fromEnv != null) {
+                validate(fromEnv);
+                return fromEnv;
+            }
             throw new ConfigException(
                     "No config file found. Expected .JimiCode/config.yaml in project or ~/.JimiCode/config.yaml");
         }
 
         validate(merged);
         return merged;
+    }
+
+    /**
+     * Build a minimal default {@link AppConfig} from environment / .env
+     * variables so JimiCode can start without a config.yaml file.
+     *
+     * <p>Recognized variables (all optional):</p>
+     * <ul>
+     *   <li>{@code JimiCode_API_KEY} — explicit key; falls back to
+     *       {@code ANTHROPIC_API_KEY} then {@code OPENAI_API_KEY}</li>
+     *   <li>{@code JimiCode_PROTOCOL} — one of {@code anthropic} /
+     *       {@code openai} / {@code openai-compat}; auto-detected from the key
+     *       name when absent</li>
+     *   <li>{@code JimiCode_BASE_URL} — defaults to the official endpoint</li>
+     *   <li>{@code JimiCode_MODEL} — defaults per protocol</li>
+     * </ul>
+     *
+     * @return the built config, or {@code null} when no API key is available
+     */
+    static AppConfig buildFromEnv() throws ConfigException {
+        String protocol = blankToNull(DotenvLoader.get("JimiCode_PROTOCOL"));
+        if (protocol == null) {
+            protocol = DotenvLoader.has("ANTHROPIC_API_KEY") ? "anthropic"
+                    : DotenvLoader.has("OPENAI_API_KEY") ? "openai"
+                    : null;
+        }
+        if (protocol == null) return null;
+        if (!VALID_PROTOCOLS.contains(protocol)) {
+            throw new ConfigException(
+                    "JimiCode_PROTOCOL invalid protocol '%s', must be one of: anthropic, openai, openai-compat"
+                            .formatted(protocol));
+        }
+
+        String apiKey = blankToNull(DotenvLoader.get("JimiCode_API_KEY"));
+        if (apiKey == null) apiKey = blankToNull(DotenvLoader.get("ANTHROPIC_API_KEY"));
+        if (apiKey == null) apiKey = blankToNull(DotenvLoader.get("OPENAI_API_KEY"));
+        if (apiKey == null) {
+            throw new ConfigException("No config file found and no API key available. " +
+                    "Set JimiCode_API_KEY or ANTHROPIC_API_KEY / OPENAI_API_KEY in the environment or a .env file.");
+        }
+
+        var p = new ProviderConfig();
+        p.setName("env-default");
+        p.setProtocol(protocol);
+        String baseUrl = blankToNull(DotenvLoader.get("JimiCode_BASE_URL"));
+        p.setBaseUrl(baseUrl != null ? baseUrl : DEFAULT_BASE_URLS.get(protocol));
+        String model = blankToNull(DotenvLoader.get("JimiCode_MODEL"));
+        p.setModel(model != null ? model : DEFAULT_MODELS.get(protocol));
+        p.setApiKey(apiKey);
+
+        var cfg = new AppConfig();
+        cfg.setProviders(List.of(p));
+        return cfg;
+    }
+
+    private static String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s;
     }
 
     private static AppConfig loadSingleFile(Path configPath) throws ConfigException {
