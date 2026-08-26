@@ -1,4 +1,4 @@
-﻿package com.jimicode.permission;
+package com.jimicode.permission;
 
 import org.junit.jupiter.api.Test;
 

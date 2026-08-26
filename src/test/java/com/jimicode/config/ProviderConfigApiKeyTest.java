@@ -1,4 +1,4 @@
-﻿package com.jimicode.config;
+package com.jimicode.config;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
