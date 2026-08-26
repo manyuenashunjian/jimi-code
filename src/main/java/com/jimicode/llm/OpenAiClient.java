@@ -38,9 +38,9 @@ public class OpenAiClient implements LlmClient {
         }
         this.sdkClient = OpenAIOkHttpClient.builder()
                 .apiKey(apiKey)
-                .baseUrl(cfg.resolvedBaseUrl())
+                .baseUrl(cfg.getBaseUrl())
                 .build();
-        this.model = cfg.resolvedModel();
+        this.model = cfg.getModel();
         this.thinking = cfg.isThinking();
         this.systemPrompt = systemPrompt;
         this.maxOutputTokens = cfg.resolvedMaxOutputTokens();

@@ -23,20 +23,8 @@ public class ConfigLoader {
     private static final Set<String> VALID_PROTOCOLS = Set.of("anthropic", "openai", "openai-compat");
 
     public static AppConfig load(String path) throws ConfigException {
-        // Load .env first so values defined there (e.g. JimiCode_CONFIG,
-        // ANTHROPIC_API_KEY / OPENAI_API_KEY) participate in startup.
-        DotenvLoader.load();
-
         if (path != null && !path.isEmpty()) {
             var cfg = loadSingleFile(Path.of(path));
-            validate(cfg);
-            return cfg;
-        }
-
-        // A .env file may also point at the config file location.
-        String envPath = DotenvLoader.get("JimiCode_CONFIG");
-        if (envPath != null && !envPath.isBlank()) {
-            var cfg = loadSingleFile(Path.of(envPath));
             validate(cfg);
             return cfg;
         }
@@ -61,77 +49,12 @@ public class ConfigLoader {
         }
 
         if (merged == null) {
-            // No config file at all: if an API key is available from the
-            // environment or a .env file, build a default provider so the app
-            // can start without writing any config.yaml.
-            AppConfig fromEnv = buildFromEnv();
-            if (fromEnv != null) {
-                validate(fromEnv);
-                return fromEnv;
-            }
             throw new ConfigException(
                     "No config file found. Expected .JimiCode/config.yaml in project or ~/.JimiCode/config.yaml");
         }
 
         validate(merged);
         return merged;
-    }
-
-    /**
-     * Build a minimal default {@link AppConfig} from environment / .env
-     * variables so JimiCode can start without a config.yaml file.
-     *
-     * <p>Recognized variables (all optional):</p>
-     * <ul>
-     *   <li>{@code JimiCode_API_KEY} — explicit key; falls back to
-     *       {@code ANTHROPIC_API_KEY} then {@code OPENAI_API_KEY}</li>
-     *   <li>{@code JimiCode_PROTOCOL} — one of {@code anthropic} /
-     *       {@code openai} / {@code openai-compat}; auto-detected from the key
-     *       name when absent</li>
-     *   <li>{@code JimiCode_BASE_URL} — defaults to the official endpoint</li>
-     *   <li>{@code JimiCode_MODEL} — defaults per protocol</li>
-     * </ul>
-     *
-     * @return the built config, or {@code null} when no API key is available
-     */
-    static AppConfig buildFromEnv() throws ConfigException {
-        String protocol = blankToNull(DotenvLoader.get("JimiCode_PROTOCOL"));
-        if (protocol == null) {
-            protocol = DotenvLoader.has("ANTHROPIC_API_KEY") ? "anthropic"
-                    : DotenvLoader.has("OPENAI_API_KEY") ? "openai"
-                    : null;
-        }
-        if (protocol == null) return null;
-        if (!VALID_PROTOCOLS.contains(protocol)) {
-            throw new ConfigException(
-                    "JimiCode_PROTOCOL invalid protocol '%s', must be one of: anthropic, openai, openai-compat"
-                            .formatted(protocol));
-        }
-
-        String apiKey = blankToNull(DotenvLoader.get("JimiCode_API_KEY"));
-        if (apiKey == null) apiKey = blankToNull(DotenvLoader.get("ANTHROPIC_API_KEY"));
-        if (apiKey == null) apiKey = blankToNull(DotenvLoader.get("OPENAI_API_KEY"));
-        if (apiKey == null) {
-            throw new ConfigException("No config file found and no API key available. " +
-                    "Set JimiCode_API_KEY or ANTHROPIC_API_KEY / OPENAI_API_KEY in the environment or a .env file.");
-        }
-
-        var p = new ProviderConfig();
-        p.setName("env-default");
-        p.setProtocol(protocol);
-        // base_url / model may stay null: resolvedBaseUrl() / resolvedModel()
-        // fall back to .env values, then to per-protocol defaults.
-        p.setBaseUrl(blankToNull(DotenvLoader.get("JimiCode_BASE_URL")));
-        p.setModel(blankToNull(DotenvLoader.get("JimiCode_MODEL")));
-        p.setApiKey(apiKey);
-
-        var cfg = new AppConfig();
-        cfg.setProviders(List.of(p));
-        return cfg;
-    }
-
-    private static String blankToNull(String s) {
-        return (s == null || s.isBlank()) ? null : s;
     }
 
     private static AppConfig loadSingleFile(Path configPath) throws ConfigException {
@@ -203,11 +126,10 @@ public class ConfigLoader {
             }
             var missing = new ArrayList<String>();
 
-            // name and protocol are required; base_url / model / api_key may be
-            // omitted and are resolved at runtime from .env / environment /
-            // per-protocol defaults (see ProviderConfig.resolved*()).
             if (isBlank(p.getName())) missing.add("name");
             if (isBlank(p.getProtocol())) missing.add("protocol");
+            if (isBlank(p.getBaseUrl())) missing.add("base_url");
+            if (isBlank(p.getModel())) missing.add("model");
 
             if (!missing.isEmpty()) {
                 throw new ConfigException(

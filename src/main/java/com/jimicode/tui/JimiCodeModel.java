@@ -452,7 +452,7 @@ public class JimiCodeModel implements Model {
 
             memoryManager = new MemoryManager(workDir);
 
-            var env = PromptBuilder.detectEnvironment(selectedProvider.resolvedModel());
+            var env = PromptBuilder.detectEnvironment(selectedProvider.getModel());
             instructionsContent = MemoryManager.loadInstructions(workDir);
             memoryContentField = buildMemorySection();
             var options = new PromptBuilder.BuildOptions(null);
@@ -629,7 +629,7 @@ public class JimiCodeModel implements Model {
     }
 
     private String renderBanner() {
-        String modelName = selectedProvider != null ? selectedProvider.resolvedModel() : "";
+        String modelName = selectedProvider != null ? selectedProvider.getModel() : "";
         String workDir = System.getProperty("user.dir");
         return Styles.banner.render(" /\\_/\\    ") + Styles.bannerDim.render(VERSION) + "\n" +
                Styles.banner.render("( o.o )   ") + Styles.bannerDim.render(modelName) + "\n" +
@@ -646,7 +646,7 @@ public class JimiCodeModel implements Model {
 
         for (int i = 0; i < providers.size(); i++) {
             var p = providers.get(i);
-            String label = p.getName() + " (" + p.resolvedModel() + ")";
+            String label = p.getName() + " (" + p.getModel() + ")";
             if (i == providerCursor) {
                 sb.append(Styles.selectedItem.render("  ❯ " + label));
             } else {
@@ -2200,7 +2200,7 @@ public class JimiCodeModel implements Model {
         if (mcpConnecting) {
             rightParts.append(Styles.modePlan.render("MCP connecting… "));
         }
-        String modelStr = selectedProvider != null ? selectedProvider.resolvedModel() : "";
+        String modelStr = selectedProvider != null ? selectedProvider.getModel() : "";
         if (!modelStr.isEmpty()) {
             rightParts.append(Styles.statusItem.render(modelStr));
         }

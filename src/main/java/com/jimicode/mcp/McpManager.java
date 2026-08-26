@@ -5,7 +5,6 @@
 
 package com.jimicode.mcp;
 
-import com.jimicode.config.DotenvLoader;
 import com.jimicode.config.McpServerConfig;
 import com.jimicode.tool.Tool;
 import com.jimicode.tool.ToolCategory;
@@ -138,7 +137,7 @@ public class McpManager {
     static String resolveEnvVars(String value) {
         if (value == null) return null;
         return ENV_VAR.matcher(value).replaceAll(m -> {
-            String env = DotenvLoader.get(m.group(1));
+            String env = System.getenv(m.group(1));
             return env != null ? env : m.group(0);
         });
     }

@@ -37,9 +37,9 @@ public class AnthropicClient implements LlmClient {
         }
         this.sdkClient = AnthropicOkHttpClient.builder()
                 .apiKey(apiKey)
-                .baseUrl(cfg.resolvedBaseUrl())
+                .baseUrl(cfg.getBaseUrl())
                 .build();
-        this.model = ModelResolver.resolve(cfg.resolvedModel());
+        this.model = ModelResolver.resolve(cfg.getModel());
         this.thinking = cfg.isThinking();
         this.systemPrompt = systemPrompt;
         this.maxOutputTokens = cfg.resolvedMaxOutputTokens();
