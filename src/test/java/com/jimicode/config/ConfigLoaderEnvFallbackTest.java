@@ -72,4 +72,28 @@ class ConfigLoaderEnvFallbackTest {
                 () -> ConfigLoader.buildFromEnv());
         assertTrue(error.getMessage().contains("invalid protocol"));
     }
+
+    @Test
+    void onlyThreePiecesAreEnoughOthersUseDefaults(@TempDir Path dir) throws Exception {
+        // User supplies ONLY base url + api key + protocol; model & endpoint
+        // default values must kick in.
+        String apiKey = "test-key-" + System.nanoTime();
+        Path file = dir.resolve(".env");
+        Files.writeString(file,
+                "JimiCode_PROTOCOL=anthropic\n"
+                        + "JimiCode_API_KEY=" + apiKey + "\n"
+                        + "JimiCode_BASE_URL=https://api.anthropic.com\n");
+
+        DotenvLoader.reset();
+        DotenvLoader.loadFrom(file);
+
+        AppConfig cfg = ConfigLoader.buildFromEnv();
+        assertNotNull(cfg);
+        var p = cfg.getProviders().get(0);
+        assertEquals("anthropic", p.getProtocol());
+        assertEquals(apiKey, p.getApiKey());
+        assertEquals("https://api.anthropic.com", p.getBaseUrl());
+        // Not configured -> per-protocol default model.
+        assertEquals("claude-sonnet-4-6", p.getModel());
+    }
 }
