@@ -16,26 +16,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class ConfigLoader {
 
     private static final Set<String> VALID_PROTOCOLS = Set.of("anthropic", "openai", "openai-compat");
-
-    /** Default endpoints used when building a provider purely from .env / env vars. */
-    private static final Map<String, String> DEFAULT_BASE_URLS = Map.of(
-            "anthropic", "https://api.anthropic.com",
-            "openai", "https://api.openai.com",
-            "openai-compat", "https://api.openai.com"
-    );
-
-    /** Default models used when building a provider purely from .env / env vars. */
-    private static final Map<String, String> DEFAULT_MODELS = Map.of(
-            "anthropic", "claude-sonnet-4-6",
-            "openai", "gpt-4o",
-            "openai-compat", "gpt-4o"
-    );
 
     public static AppConfig load(String path) throws ConfigException {
         // Load .env first so values defined there (e.g. JimiCode_CONFIG,
@@ -134,10 +119,10 @@ public class ConfigLoader {
         var p = new ProviderConfig();
         p.setName("env-default");
         p.setProtocol(protocol);
-        String baseUrl = blankToNull(DotenvLoader.get("JimiCode_BASE_URL"));
-        p.setBaseUrl(baseUrl != null ? baseUrl : DEFAULT_BASE_URLS.get(protocol));
-        String model = blankToNull(DotenvLoader.get("JimiCode_MODEL"));
-        p.setModel(model != null ? model : DEFAULT_MODELS.get(protocol));
+        // base_url / model may stay null: resolvedBaseUrl() / resolvedModel()
+        // fall back to .env values, then to per-protocol defaults.
+        p.setBaseUrl(blankToNull(DotenvLoader.get("JimiCode_BASE_URL")));
+        p.setModel(blankToNull(DotenvLoader.get("JimiCode_MODEL")));
         p.setApiKey(apiKey);
 
         var cfg = new AppConfig();
@@ -218,10 +203,11 @@ public class ConfigLoader {
             }
             var missing = new ArrayList<String>();
 
+            // name and protocol are required; base_url / model / api_key may be
+            // omitted and are resolved at runtime from .env / environment /
+            // per-protocol defaults (see ProviderConfig.resolved*()).
             if (isBlank(p.getName())) missing.add("name");
             if (isBlank(p.getProtocol())) missing.add("protocol");
-            if (isBlank(p.getBaseUrl())) missing.add("base_url");
-            if (isBlank(p.getModel())) missing.add("model");
 
             if (!missing.isEmpty()) {
                 throw new ConfigException(

@@ -94,6 +94,29 @@ class ConfigLoaderEnvFallbackTest {
         assertEquals(apiKey, p.getApiKey());
         assertEquals("https://api.anthropic.com", p.getBaseUrl());
         // Not configured -> per-protocol default model.
-        assertEquals("claude-sonnet-4-6", p.getModel());
+        assertEquals("claude-sonnet-4-6", p.resolvedModel());
+    }
+
+    @Test
+    void configMissingBaseAndModelFallsBackToDotenv(@TempDir Path dir) throws Exception {
+        String apiKey = "test-key-" + System.nanoTime();
+        // .env provides everything...
+        Path env = dir.resolve(".env");
+        Files.writeString(env,
+                "JimiCode_BASE_URL=https://dotenv.example.com\n"
+                        + "JimiCode_MODEL=dotenv-model\n"
+                        + "JimiCode_API_KEY=" + apiKey + "\n");
+        DotenvLoader.reset();
+        DotenvLoader.loadFrom(env);
+
+        // ...while config.yaml only declares name + protocol.
+        Path cfg = dir.resolve("config.yaml");
+        Files.writeString(cfg, "providers:\n  - name: p\n    protocol: anthropic\n");
+
+        AppConfig loaded = ConfigLoader.load(cfg.toString());
+        var p = loaded.getProviders().get(0);
+        assertEquals("https://dotenv.example.com", p.resolvedBaseUrl());
+        assertEquals("dotenv-model", p.resolvedModel());
+        assertEquals(apiKey, p.resolvedApiKey());
     }
 }

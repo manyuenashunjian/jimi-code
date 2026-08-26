@@ -15,6 +15,20 @@ public class ProviderConfig {
             "openai-compat", "OPENAI_API_KEY"
     );
 
+    /** Default endpoints used when neither config nor .env provides a base URL. */
+    public static final Map<String, String> DEFAULT_BASE_URLS = Map.of(
+            "anthropic", "https://api.anthropic.com",
+            "openai", "https://api.openai.com",
+            "openai-compat", "https://api.openai.com"
+    );
+
+    /** Default models used when neither config nor .env provides a model. */
+    public static final Map<String, String> DEFAULT_MODELS = Map.of(
+            "anthropic", "claude-sonnet-4-6",
+            "openai", "gpt-4o",
+            "openai-compat", "gpt-4o"
+    );
+
     private String name;
     private String protocol;
     private String baseUrl;
@@ -136,14 +150,51 @@ public class ProviderConfig {
     public String resolvedApiKey() {
         // 1) Config file api_key — highest priority.
         if (apiKey != null && !apiKey.isEmpty()) return apiKey;
-        // 2) Fall back to the protocol's standard environment variable.
+        // 2) Fall back to the protocol's standard environment variable,
+        //    which in turn falls back to a local .env file.
         return envApiKey();
     }
 
+    /**
+     * Resolve the effective base URL, highest priority first:
+     *
+     * <ol>
+     *   <li>{@code base_url} written in the config file;</li>
+     *   <li>{@code JimiCode_BASE_URL} from the environment or a .env file;</li>
+     *   <li>the official endpoint for the protocol.</li>
+     * </ol>
+     */
+    public String resolvedBaseUrl() {
+        if (baseUrl != null && !baseUrl.isBlank()) return baseUrl;
+        String fromEnv = DotenvLoader.get("JimiCode_BASE_URL");
+        if (fromEnv != null && !fromEnv.isBlank()) return fromEnv;
+        return DEFAULT_BASE_URLS.getOrDefault(protocol, "");
+    }
+
+    /**
+     * Resolve the effective model, highest priority first:
+     *
+     * <ol>
+     *   <li>{@code model} written in the config file;</li>
+     *   <li>{@code JimiCode_MODEL} from the environment or a .env file;</li>
+     *   <li>a per-protocol default model.</li>
+     * </ol>
+     */
+    public String resolvedModel() {
+        if (model != null && !model.isBlank()) return model;
+        String fromEnv = DotenvLoader.get("JimiCode_MODEL");
+        if (fromEnv != null && !fromEnv.isBlank()) return fromEnv;
+        return DEFAULT_MODELS.getOrDefault(protocol, "");
+    }
+
     private String envApiKey() {
+        // Explicit JimiCode_API_KEY takes priority, then the protocol's
+        // standard variable. Both look up the real environment first and
+        // fall back to a local .env file.
+        String explicit = DotenvLoader.get("JimiCode_API_KEY");
+        if (explicit != null && !explicit.isBlank()) return explicit;
         String envVar = ENV_KEY_MAP.get(protocol);
         if (envVar == null) return "";
-        // Real environment variable wins; a local .env file acts as fallback.
         String val = DotenvLoader.get(envVar);
         return val != null ? val : "";
     }

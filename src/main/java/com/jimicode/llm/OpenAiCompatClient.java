@@ -54,8 +54,8 @@ public class OpenAiCompatClient implements LlmClient {
                             + "'. Set it in .JimiCode/config.yaml or via OPENAI_API_KEY env var.");
         }
         this.apiKey = key;
-        this.baseUrl = cfg.getBaseUrl().replaceAll("/+$", "");
-        this.model = cfg.getModel();
+        this.baseUrl = cfg.resolvedBaseUrl().replaceAll("/+$", "");
+        this.model = cfg.resolvedModel();
         this.systemPrompt = systemPrompt;
         this.maxOutputTokens = cfg.resolvedMaxOutputTokens();
 
