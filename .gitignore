@@ -33,10 +33,7 @@ sessions/
 # AI 助手本地记忆
 .workbuddy/
 
-# Maven Wrapper（本项目使用本机 Maven 构建，不提交）
-.mvn/
-mvnw
-mvnw.cmd
+# Maven Wrapper（固定 Maven 版本，便于开发机与 CI 使用一致的构建工具）
 
 # 废弃的旧 Maven 子项目
 mewcode-maven/
